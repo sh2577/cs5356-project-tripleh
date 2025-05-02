@@ -1,8 +1,8 @@
-import { GitHubIcon, UserButton } from "@daveyplate/better-auth-ui"
-import Link from "next/link"
+import { GitHubIcon, UserButton } from '@daveyplate/better-auth-ui';
+import Link from 'next/link';
 
-import { ModeToggle } from "./mode-toggle"
-import { Button } from "./ui/button"
+import { ModeToggle } from './mode-toggle';
+import { Button } from './ui/button';
 
 export function Header() {
     return (
@@ -28,10 +28,7 @@ export function Header() {
                 </Link>
 
                 <div className="flex items-center gap-2">
-                    <Link
-                        href="https://github.com/daveyplate/better-auth-nextjs-starter"
-                        target="_blank"
-                    >
+                    <Link href="https://github.com/daveyplate/better-auth-nextjs-starter" target="_blank">
                         <Button variant="outline" size="icon" className="size-8 rounded-full">
                             <GitHubIcon />
                         </Button>
@@ -42,5 +39,5 @@ export function Header() {
                 </div>
             </div>
         </header>
-    )
+    );
 }
