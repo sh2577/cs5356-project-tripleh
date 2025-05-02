@@ -1,3 +1,59 @@
+# Better Auth Next.js Starter (App Router)
+
+[Demo](https://nextjs.better-auth-starter.com)
+
+- [Pages Router](https://github.com/daveyplate/better-auth-nextjs-pages-starter)
+- [TanStack Start](https://github.com/daveyplate/better-auth-tanstack-starter)
+
+## Installation
+
+First, create a PostgreSQL Database then configure your environment variables.
+
+You can generate a `BETTER_AUTH_SECRET` [here](https://www.better-auth.com/docs/installation#set-environment-variables).
+
+```bash
+BETTER_AUTH_SECRET=""
+DATABASE_URL=""
+```
+
+Then generate your schema and perform migrations with drizzle-kit.
+
+```bash
+npx @better-auth/cli generate
+npx drizzle-kit generate
+npx drizzle-kit migrate
+```
+
+- Twitter: [@daveycodez](https://x.com/daveycodez)
+
+☕️ [Buy me a coffee](https://buymeacoffee.com/daveycodez)
+
+## Features:
+
+[Better Auth](https://better-auth.com)
+
+[Better Auth UI](https://better-auth-ui.com)
+
+[Better Auth TanStack](https://github.com/daveyplate/better-auth-tanstack)
+
+[TanStack Query](https://tanstack.com/query)
+
+[shadcn/ui](https://ui.shadcn.com)
+
+[TailwindCSS](https://tailwindcss.com)
+
+[Drizzle ORM](https://orm.drizzle.team)
+
+[PostgreSQL](https://postgresql.org)
+
+[Biome](https://biomejs.dev)
+
+[Next.js](https://nextjs.org)
+
+[Turborepo](https://turbo.build)
+
+## Next.js
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
