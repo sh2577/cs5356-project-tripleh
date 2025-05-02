@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database/db';
 import { matches, snacks, users } from '@/database/schema';
 import { getCurrentUser } from '@/lib/auth';
-import { or, and, eq } from 'drizzle-orm';
+import { or, eq } from 'drizzle-orm';
 
 // GET /api/matches - Get user's matches with details
-export async function GET(request: NextRequest) {
+export async function GET(_: NextRequest) {
     try {
         const user = await getCurrentUser();
 

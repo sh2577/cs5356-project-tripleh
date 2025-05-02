@@ -3,7 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
 import { db } from '@/database/db';
 import * as schema from '@/database/schema';
-import { authClient } from './auth-client';
+import { headers } from 'next/headers';
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -17,11 +17,13 @@ export const auth = betterAuth({
 });
 
 export const getCurrentUser = async () => {
-    const session = await authClient.getSession();
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
 
-    if (!session || !session.data?.user) {
+    if (!session || !session.user) {
         throw new Error('Authentication required');
     }
 
-    return session.data.user;
+    return session.user;
 };
