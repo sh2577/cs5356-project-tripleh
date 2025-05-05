@@ -1,37 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database/db';
 import { snacks } from '@/database/schema';
-import { eq } from 'drizzle-orm';
+import { getCurrentUser } from '@/lib/auth';
+import { and, eq } from 'drizzle-orm';
+import { extractKeyFromUrl, deleteFileFromR2 } from '@/lib/cloudflare';
 
-<<<<<<< Updated upstream
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { id } = params;
-=======
 // GET /api/snacks/[id] - Get a specific snack
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const user = await getCurrentUser();
         const snackId = (await params).id;
->>>>>>> Stashed changes
 
-    // 删除零食
-    await db.delete(snacks).where(eq(snacks.id, id));
+        const snack = await db.select().from(snacks).where(eq(snacks.id, snackId)).limit(1);
 
-<<<<<<< Updated upstream
-    return NextResponse.json({ message: 'Snack deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting snack:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete snack' },
-      { status: 500 }
-    );
-  }
-} 
-=======
         if (snack.length === 0) {
             return NextResponse.json({ error: 'Snack not found' }, { status: 404 });
         }
@@ -155,4 +136,3 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
         return NextResponse.json({ error: 'Failed to delete snack' }, { status: 500 });
     }
 }
->>>>>>> Stashed changes
