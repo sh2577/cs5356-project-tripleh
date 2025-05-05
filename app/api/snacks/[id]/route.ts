@@ -6,10 +6,10 @@ import { and, eq } from 'drizzle-orm';
 import { extractKeyFromUrl, deleteFileFromR2 } from '@/lib/cloudflare';
 
 // GET /api/snacks/[id] - Get a specific snack
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const user = await getCurrentUser();
-        const snackId = params.id;
+        const snackId = (await params).id;
 
         const snack = await db.select().from(snacks).where(eq(snacks.id, snackId)).limit(1);
 
@@ -34,10 +34,10 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 }
 
 // PUT /api/snacks/[id] - Update a snack
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const user = await getCurrentUser();
-        const snackId = params.id;
+        const snackId = (await params).id;
         const { name, description, location, imageUrl } = await request.json();
 
         // Validate required fields
@@ -85,10 +85,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE /api/snacks/[id] - Delete a snack
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const user = await getCurrentUser();
-        const snackId = params.id;
+        const snackId = (await params).id;
 
         // Verify the snack exists and belongs to the user
         const existingSnack = await db

@@ -5,10 +5,10 @@ import { getCurrentUser } from '@/lib/auth';
 import { and, eq, or, inArray } from 'drizzle-orm';
 
 // GET /api/matches/[matchId] - Get a specific match
-export async function GET(_: NextRequest, { params }: { params: { matchId: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ matchId: string }> }) {
     try {
         const user = await getCurrentUser();
-        const matchId = params.matchId;
+        const matchId = (await params).matchId;
 
         // Verify that the user is part of this match
         const match = await db
@@ -33,10 +33,10 @@ export async function GET(_: NextRequest, { params }: { params: { matchId: strin
 }
 
 // DELETE /api/matches/[matchId] - Unmatch (delete a match)
-export async function DELETE(_: NextRequest, { params }: { params: { matchId: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ matchId: string }> }) {
     try {
         const user = await getCurrentUser();
-        const matchId = params.matchId;
+        const matchId = (await params).matchId;
 
         // Verify that the user is part of this match and get match details
         const matchDetails = await db
