@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database/db';
 import { matches, snacks, users } from '@/database/schema';
 import { getCurrentUser } from '@/lib/auth';
+import { alias } from 'drizzle-orm/pg-core';
 import { or, eq } from 'drizzle-orm';
 
 // GET /api/matches - Get user's matches with details
@@ -72,4 +73,8 @@ export async function GET(_: NextRequest) {
 
         return NextResponse.json({ error: 'Failed to fetch matches' }, { status: 500 });
     }
+
+    console.error('Error fetching matches:', error);
+    return NextResponse.json({ error: 'Failed to fetch matches' }, { status: 500 });
+  }
 }
