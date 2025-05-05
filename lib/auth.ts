@@ -17,13 +17,18 @@ export const auth = betterAuth({
 });
 
 export const getCurrentUser = async () => {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
 
-    if (!session || !session.user) {
+        if (!session || !session.user) {
+            throw new Error('Authentication required');
+        }
+
+        return session.user;
+    } catch (error) {
+        console.error('Auth error:', error);
         throw new Error('Authentication required');
     }
-
-    return session.user;
 };

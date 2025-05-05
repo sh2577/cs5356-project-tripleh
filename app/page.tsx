@@ -1,70 +1,107 @@
+import { Button } from '@/components/ui/button';
+import { Boxes, ArrowRight, Cookie } from 'lucide-react';
+import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Home() {
     return (
-        <div className="grid grow grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-            <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start">
-                <Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={180} height={38} priority />
-                <ol className="list-inside list-decimal text-center font-[family-name:var(--font-geist-mono)] text-sm sm:text-left">
-                    <li className="mb-2">
-                        Get started by editing{' '}
-                        <code className="rounded bg-black/[.05] px-1 py-0.5 font-semibold dark:bg-white/[.06]">
-                            src/app/page.tsx
-                        </code>
-                        .
-                    </li>
-                    <li>Save and see your changes instantly.</li>
-                </ol>
-
-                <div className="flex flex-col items-center gap-4 sm:flex-row">
-                    <a
-                        className="flex h-10 items-center justify-center gap-2 rounded-full border border-transparent border-solid bg-foreground px-4 text-background text-sm transition-colors hover:bg-[#383838] sm:h-12 sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
-                        href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Image className="dark:invert" src="/vercel.svg" alt="Vercel logomark" width={20} height={20} />
-                        Deploy now
-                    </a>
-                    <a
-                        className="flex h-10 items-center justify-center rounded-full border border-black/[.08] border-solid px-4 text-sm transition-colors hover:border-transparent hover:bg-[#f2f2f2] sm:h-12 sm:min-w-44 sm:px-5 sm:text-base dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-                        href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Read our docs
-                    </a>
+        <main className="flex-1">
+            {/* Hero Section */}
+            <section className="relative py-20 md:py-32 overflow-hidden">
+                <div className="container mx-auto px-4">
+                    <div className="flex flex-col md:flex-row items-center">
+                        <div className="md:w-1/2 mb-12 md:mb-0 md:pr-10">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Cookie className="text-primary h-8 w-8" />
+                                <h2 className="text-xl font-bold text-primary">Snack Swap</h2>
+                            </div>
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6">
+                                Discover & Trade
+                                <span className="text-primary block">Global Snacks</span>
+                            </h1>
+                            <p className="text-muted-foreground text-lg md:text-xl mb-8 max-w-md">
+                                Connect with snack lovers worldwide and swap your favorite local treats for exotic
+                                flavors from across the globe.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <Link href="/auth/sign-up">
+                                    <Button size="lg" className="w-full sm:w-auto">
+                                        Join Now <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </Link>
+                                <Link href="/feed">
+                                    <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                                        Explore Snacks
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="md:w-1/2 relative">
+                            <div className="relative h-[400px] w-full rounded-lg overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background/10 z-10 rounded-lg"></div>
+                                <Image
+                                    src="/snack-collage.jpg"
+                                    alt="Collage of global snacks"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </section>
+
+            {/* How It Works */}
+            <section className="py-20 bg-muted/50">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">How Snack Swap Works</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                                <span className="font-bold text-lg">1</span>
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">Upload Your Snacks</h3>
+                            <p className="text-muted-foreground">
+                                Share your favorite local snacks with photos, descriptions, and location.
+                            </p>
+                        </div>
+                        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                                <span className="font-bold text-lg">2</span>
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">Swipe on Snacks</h3>
+                            <p className="text-muted-foreground">
+                                Browse and swipe right on snacks you'd like to trade for.
+                            </p>
+                        </div>
+                        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                                <span className="font-bold text-lg">3</span>
+                            </div>
+                            <h3 className="text-xl font-bold mb-3">Make a Match</h3>
+                            <p className="text-muted-foreground">
+                                When there's mutual interest, connect with your match and arrange your snack swap.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-20">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to discover global flavors?</h2>
+                    <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+                        Join thousands of snack enthusiasts and start your flavor adventure today.
+                    </p>
+                    <Link href="/auth/sign-up">
+                        <Button size="lg">
+                            Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </Link>
+                </div>
+            </section>
             </main>
-            <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
-                <a
-                    className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                    href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-                    Learn
-                </a>
-                <a
-                    className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                    href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Image aria-hidden src="/window.svg" alt="Window icon" width={16} height={16} />
-                    Examples
-                </a>
-                <a
-                    className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                    href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-                    Go to nextjs.org →
-                </a>
-            </footer>
-        </div>
     );
 }
