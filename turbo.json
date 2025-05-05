@@ -1,9 +1,7 @@
 {
-    "globalDependencies": [".env"],
     "$schema": "https://turbo.build/schema.json",
     "tasks": {
         "build": {
-            "inputs": ["$TURBO_DEFAULT$", ".env"],
             "dependsOn": ["^build"],
             "outputs": [".next/**", "!.next/cache/**"]
         },
@@ -15,5 +13,11 @@
             "cache": false
         }
     },
-    "globalEnv": ["BETTER_AUTH_SECRET", "DATABASE_URL"]
+    "globalEnv": ["BETTER_AUTH_SECRET",
+                "DATABASE_URL",
+                "CLOUDFLARE_ACCOUNT_ID",
+                "CLOUDFLARE_ACCESS_KEY_ID",
+                "CLOUDFLARE_SECRET_ACCESS_KEY",
+                "CLOUDFLARE_PUBLIC_URL",
+                "CLOUDFLARE_R2_BUCKET"]
 }
