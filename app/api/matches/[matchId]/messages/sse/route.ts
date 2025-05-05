@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { and, desc, eq, gt, inArray, or } from 'drizzle-orm';
 
 // GET /api/matches/[matchId]/messages/sse - Real-time messages using SSE
-export async function GET(request: NextRequest, { params }: { params: { matchId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ matchId: string }> }) {
     // Tell the browser to keep the connection open
     const encoder = new TextEncoder();
 
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: { matchId:
         async start(controller) {
             try {
                 const user = await getCurrentUser();
-                const matchId = params.matchId;
+                const matchId = (await params).matchId;
 
                 // Verify the user is part of the match
                 const matchCheck = await db

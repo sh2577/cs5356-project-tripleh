@@ -5,10 +5,10 @@ import { getCurrentUser } from '@/lib/auth';
 import { and, eq, or, desc, gt, inArray } from 'drizzle-orm';
 
 // GET /api/matches/[matchId]/messages - Get messages for a specific match
-export async function GET(request: NextRequest, { params }: { params: { matchId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ matchId: string }> }) {
     try {
         const user = await getCurrentUser();
-        const matchId = params.matchId;
+        const matchId = (await params).matchId;
 
         // Check for "since" parameter to get only messages after a certain timestamp
         const sinceParam = request.nextUrl.searchParams.get('since');
@@ -83,10 +83,10 @@ export async function GET(request: NextRequest, { params }: { params: { matchId:
 }
 
 // POST /api/matches/[matchId]/messages - Send a new message
-export async function POST(request: NextRequest, { params }: { params: { matchId: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ matchId: string }> }) {
     try {
         const user = await getCurrentUser();
-        const matchId = params.matchId;
+        const matchId = (await params).matchId;
         const { content } = await request.json();
 
         if (!content?.trim()) {
