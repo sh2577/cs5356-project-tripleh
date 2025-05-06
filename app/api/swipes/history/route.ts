@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database/db';
-import { snacks, swipes, users } from '@/database/schema';
+import { snacks, swipes, users, matches } from '@/database/schema';
 import { getCurrentUser } from '@/lib/auth';
-import { desc, eq, and } from 'drizzle-orm';
+import { desc, eq, and, or } from 'drizzle-orm';
 
 // GET /api/swipes/history - Get user's swipe history
 export async function GET(request: NextRequest) {
@@ -61,19 +61,58 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Swipe ID is required' }, { status: 400 });
         }
 
-        // Verify the swipe belongs to the user
-        const swipeExists = await db
-            .select({ id: swipes.id })
+        // Verify the swipe belongs to the user and get swipe details
+        const swipeDetails = await db
+            .select()
             .from(swipes)
             .where(and(eq(swipes.id, swipeId), eq(swipes.swiperUserId, user.id)))
             .limit(1);
 
-        if (swipeExists.length === 0) {
+        if (swipeDetails.length === 0) {
             return NextResponse.json({ error: 'Swipe not found or you do not have access to it' }, { status: 404 });
         }
 
-        // Delete the swipe
-        await db.delete(swipes).where(eq(swipes.id, swipeId));
+        const swipe = swipeDetails[0];
+
+        // Begin transaction to delete swipe and potentially related matches
+        await db.transaction(async (tx) => {
+            // Get the swiped snack details to find the owner
+            const [swipedSnack] = await tx.select().from(snacks).where(eq(snacks.id, swipe.swipedSnackId));
+
+            if (swipedSnack) {
+                const otherUserId = swipedSnack.userId;
+
+                // Get user's snacks to identify potential matches
+                const userSnacks = await tx.select({ id: snacks.id }).from(snacks).where(eq(snacks.userId, user.id));
+
+                const userSnackIds = userSnacks.map((snack) => snack.id);
+
+                // Find and delete any matches between these users involving these snacks
+                if (userSnackIds.length > 0) {
+                    await tx
+                        .delete(matches)
+                        .where(
+                            and(
+                                or(
+                                    and(
+                                        eq(matches.user1Id, user.id),
+                                        eq(matches.user2Id, otherUserId),
+                                        eq(matches.snack2Id, swipe.swipedSnackId)
+                                    ),
+                                    and(
+                                        eq(matches.user2Id, user.id),
+                                        eq(matches.user1Id, otherUserId),
+                                        eq(matches.snack1Id, swipe.swipedSnackId)
+                                    )
+                                )
+                            )
+                        );
+                }
+            }
+
+            // Delete the swipe
+            await tx.delete(swipes).where(eq(swipes.id, swipeId));
+        });
 
         return NextResponse.json({ success: true });
     } catch (error) {

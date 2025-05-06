@@ -25,7 +25,7 @@ export function MobileNav() {
                         className="flex items-center gap-3 rounded-md px-4 py-3 text-base font-medium hover:bg-muted transition-colors"
                     >
                         <Search className="h-5 w-5 text-primary" />
-                        Discover
+                        Feed
                     </Link>
                     <Link
                         href="/snacks"

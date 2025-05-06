@@ -105,7 +105,7 @@ export default function FeedPage() {
 
     return (
         <main className="flex-1 container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">Discover Snacks</h1>
+            <h1 className="text-3xl font-bold mb-8">Snacks Feed</h1>
 
             {/* Loading state */}
             {loading && (
@@ -130,7 +130,7 @@ export default function FeedPage() {
                     <Cookie className="h-16 w-16 text-muted-foreground mb-4" />
                     <h2 className="text-2xl font-bold mb-2">No Snacks Found</h2>
                     <p className="text-muted-foreground mb-6 max-w-md">
-                        There are no more snacks to discover right now. Check back later or add your own snacks!
+                        There are no more snacks on your feed right now. Check back later or add your own snacks!
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Link href="/snacks/new">

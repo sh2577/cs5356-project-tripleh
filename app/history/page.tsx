@@ -63,7 +63,7 @@ export default function HistoryPage() {
             // Remove the swiped item from the local state
             setHistory((prevHistory) => prevHistory.filter((item) => item.swipe.id !== selectedSwipe.swipe.id));
 
-            toast.success('Swipe decision undone successfully');
+            toast.success('Swipe decision undone successfully. Any related matches have been removed.');
 
             // Close the dialog
             setShowUndoDialog(false);
@@ -219,6 +219,11 @@ export default function HistoryPage() {
                         <AlertDialogDescription>
                             This will remove your {selectedSwipe?.swipe.liked ? 'like' : 'pass'} decision for this
                             snack. The snack will reappear in your feed so you can make a new decision.
+                            {selectedSwipe?.swipe.liked && (
+                                <span className="block mt-2 text-yellow-600 dark:text-yellow-400">
+                                    Note: This will also remove any matches created with this snack.
+                                </span>
+                            )}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
