@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,6 +29,7 @@ export default function NewSnackPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [uploadError, setUploadError] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     const form = useForm<FormValues>({
         defaultValues: {
@@ -68,6 +69,33 @@ export default function NewSnackPage() {
             setPreviewUrl(null);
         }
     };
+
+    const handleDragOver = useCallback((e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    }, []);
+
+    const handleDrop = useCallback(
+        (e: React.DragEvent<HTMLLabelElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDragging(false);
+
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                const files = e.dataTransfer.files;
+                form.setValue('image', files);
+                handleImageChange(files);
+            }
+        },
+        [form]
+    );
 
     const onSubmit = async (values: FormValues) => {
         try {
@@ -190,7 +218,16 @@ export default function NewSnackPage() {
                                             {!previewUrl ? (
                                                 // Show placeholder when no image is selected
                                                 <div className="flex items-center justify-center w-full">
-                                                    <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-muted/40 hover:bg-muted/60 transition-colors">
+                                                    <label
+                                                        className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer ${
+                                                            isDragging
+                                                                ? 'bg-muted/70 border-primary'
+                                                                : 'bg-muted/40 hover:bg-muted/60'
+                                                        } transition-colors`}
+                                                        onDragOver={handleDragOver}
+                                                        onDragLeave={handleDragLeave}
+                                                        onDrop={handleDrop}
+                                                    >
                                                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                                             <Upload className="w-8 h-8 mb-3 text-muted-foreground" />
                                                             <p className="mb-2 text-sm text-muted-foreground">

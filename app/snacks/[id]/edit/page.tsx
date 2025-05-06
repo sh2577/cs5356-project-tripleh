@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getSnack, updateSnack, Snack, uploadImage } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,7 @@ export default function EditSnackPage() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -102,6 +103,28 @@ export default function EditSnackPage() {
             reader.readAsDataURL(file);
         }
     };
+
+    const handleDragOver = useCallback((e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleImageChange(e.dataTransfer.files);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -265,7 +288,16 @@ export default function EditSnackPage() {
                                             </div>
                                         </>
                                     ) : (
-                                        <label className="flex flex-col items-center justify-center w-full h-full border-2 border-dashed rounded-lg cursor-pointer bg-muted/40 hover:bg-muted/60 transition-colors">
+                                        <label
+                                            className={`flex flex-col items-center justify-center w-full h-full border-2 border-dashed rounded-lg cursor-pointer ${
+                                                isDragging
+                                                    ? 'bg-muted/70 border-primary'
+                                                    : 'bg-muted/40 hover:bg-muted/60'
+                                            } transition-colors`}
+                                            onDragOver={handleDragOver}
+                                            onDragLeave={handleDragLeave}
+                                            onDrop={handleDrop}
+                                        >
                                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                                 <Upload className="w-8 h-8 mb-3 text-muted-foreground" />
                                                 <p className="mb-2 text-sm text-muted-foreground">
