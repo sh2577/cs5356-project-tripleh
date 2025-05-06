@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { desc, eq, and, or } from 'drizzle-orm';
 
 // GET /api/swipes/history - Get user's swipe history
-export async function GET(request: NextRequest) {
+export async function GET(_: NextRequest) {
     try {
         const user = await getCurrentUser();
 
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        console.error('Error fetching swipe history:', error);
-        return NextResponse.json({ error: 'Failed to fetch swipe history' }, { status: 500 });
+        console.error('Error fetching heart history:', error);
+        return NextResponse.json({ error: 'Failed to fetch heart history' }, { status: 500 });
     }
 }
 
@@ -58,7 +58,7 @@ export async function DELETE(request: NextRequest) {
         const swipeId = request.nextUrl.searchParams.get('swipeId');
 
         if (!swipeId) {
-            return NextResponse.json({ error: 'Swipe ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'Heart ID is required' }, { status: 400 });
         }
 
         // Verify the swipe belongs to the user and get swipe details
@@ -69,58 +69,69 @@ export async function DELETE(request: NextRequest) {
             .limit(1);
 
         if (swipeDetails.length === 0) {
-            return NextResponse.json({ error: 'Swipe not found or you do not have access to it' }, { status: 404 });
+            return NextResponse.json({ error: 'Heart not found or you do not have access to it' }, { status: 404 });
         }
 
         const swipe = swipeDetails[0];
 
-        // Begin transaction to delete swipe and potentially related matches
-        await db.transaction(async (tx) => {
-            // Get the swiped snack details to find the owner
-            const [swipedSnack] = await tx.select().from(snacks).where(eq(snacks.id, swipe.swipedSnackId));
+        try {
+            // Begin transaction to delete swipe and potentially related matches
+            await db.transaction(async (tx) => {
+                // Get the swiped snack details to find the owner
+                const [swipedSnack] = await tx.select().from(snacks).where(eq(snacks.id, swipe.swipedSnackId));
 
-            if (swipedSnack) {
-                const otherUserId = swipedSnack.userId;
+                if (swipedSnack) {
+                    const otherUserId = swipedSnack.userId;
 
-                // Get user's snacks to identify potential matches
-                const userSnacks = await tx.select({ id: snacks.id }).from(snacks).where(eq(snacks.userId, user.id));
+                    // Get user's snacks to identify potential matches
+                    const userSnacks = await tx
+                        .select({ id: snacks.id })
+                        .from(snacks)
+                        .where(eq(snacks.userId, user.id));
 
-                const userSnackIds = userSnacks.map((snack) => snack.id);
+                    const userSnackIds = userSnacks.map((snack) => snack.id);
 
-                // Find and delete any matches between these users involving these snacks
-                if (userSnackIds.length > 0) {
-                    await tx
-                        .delete(matches)
-                        .where(
-                            and(
-                                or(
-                                    and(
-                                        eq(matches.user1Id, user.id),
-                                        eq(matches.user2Id, otherUserId),
-                                        eq(matches.snack2Id, swipe.swipedSnackId)
-                                    ),
-                                    and(
-                                        eq(matches.user2Id, user.id),
-                                        eq(matches.user1Id, otherUserId),
-                                        eq(matches.snack1Id, swipe.swipedSnackId)
+                    // Find and delete any matches between these users involving these snacks
+                    if (userSnackIds.length > 0) {
+                        await tx
+                            .delete(matches)
+                            .where(
+                                and(
+                                    or(
+                                        and(
+                                            eq(matches.user1Id, user.id),
+                                            eq(matches.user2Id, otherUserId),
+                                            eq(matches.snack2Id, swipe.swipedSnackId)
+                                        ),
+                                        and(
+                                            eq(matches.user2Id, user.id),
+                                            eq(matches.user1Id, otherUserId),
+                                            eq(matches.snack1Id, swipe.swipedSnackId)
+                                        )
                                     )
                                 )
-                            )
-                        );
+                            );
+                    }
                 }
-            }
 
-            // Delete the swipe
-            await tx.delete(swipes).where(eq(swipes.id, swipeId));
-        });
+                // Delete the swipe
+                await tx.delete(swipes).where(eq(swipes.id, swipeId));
+            });
 
-        return NextResponse.json({ success: true });
+            return NextResponse.json({ success: true });
+        } catch (txError) {
+            console.error('Transaction error when undoing heart:', txError);
+            return NextResponse.json(
+                { error: 'Database error when undoing heart', details: String(txError) },
+                { status: 500 }
+            );
+        }
     } catch (error) {
         if (error instanceof Error && error.message === 'Authentication required') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        console.error('Error undoing swipe:', error);
-        return NextResponse.json({ error: 'Failed to undo swipe' }, { status: 500 });
+        console.error('Error undoing heart:', error);
+        return NextResponse.json({ error: 'Failed to undo heart', details: String(error) }, { status: 500 });
     }
 }

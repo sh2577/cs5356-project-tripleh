@@ -135,7 +135,7 @@ export async function submitSwipe(
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to submit swipe');
+        throw new Error(error.error || 'Failed to submit heart');
     }
 
     return response.json();
@@ -247,7 +247,7 @@ export async function deleteSnack(id: string): Promise<{ success: boolean }> {
     return response.json();
 }
 
-// Unmatch - delete a match and associated swipe history
+// Unmatch - delete a match and associated heart history
 export async function unmatchUser(matchId: string): Promise<{ success: boolean }> {
     const response = await fetch(`/api/matches/${matchId}`, {
         method: 'DELETE',
@@ -267,7 +267,7 @@ export async function getSwipeHistory(): Promise<SwipeHistoryItem[]> {
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch swipe history');
+        throw new Error(error.error || 'Failed to fetch heart history');
     }
 
     return response.json();
@@ -280,11 +280,27 @@ export async function undoSwipe(swipeId: string): Promise<{ success: boolean }> 
     });
 
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to undo swipe');
+        // Check if we can parse the error response
+        try {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to undo heart');
+        } catch (parseError) {
+            // If we can't parse the JSON, throw a specific error
+            if (parseError instanceof SyntaxError) {
+                console.error('Invalid JSON response from server:', parseError);
+                throw new Error(`Server returned an invalid response (${response.status})`);
+            }
+            // Re-throw the original error
+            throw parseError;
+        }
     }
 
-    return response.json();
+    try {
+        return await response.json();
+    } catch (parseError) {
+        console.error('Error parsing JSON response:', parseError);
+        throw new Error('Server returned an invalid success response');
+    }
 }
 
 // Create an EventSource connection for real-time messages
@@ -327,4 +343,3 @@ export async function uploadImage(file: File): Promise<string> {
     const data = await response.json();
     return data.url;
 }
- 

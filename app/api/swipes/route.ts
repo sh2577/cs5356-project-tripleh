@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
         // Ensure user isn't swiping on their own snack
         if (swipedSnack[0].userId === user.id) {
-            return NextResponse.json({ error: 'Cannot swipe on your own snack' }, { status: 400 });
+            return NextResponse.json({ error: 'Cannot heart on your own snack' }, { status: 400 });
         }
 
         // Record the swipe
@@ -90,8 +90,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        console.error('Error processing swipe:', error);
-        return NextResponse.json({ error: 'Failed to process swipe' }, { status: 500 });
+        console.error('Error processing heart:', error);
+        return NextResponse.json({ error: 'Failed to process heart' }, { status: 500 });
     }
 }
  

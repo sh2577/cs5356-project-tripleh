@@ -420,7 +420,7 @@ export function MatchChat({ matchId }: MatchChatProps) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Unmatch with {match.otherUser.name}?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will remove the match and all messages between you. Your swipe history with this user
+                            This will remove the match and all messages between you. Your heart history with this user
                             will also be cleared, allowing you both to potentially match again in the future if you
                             change your mind. This action cannot be undone.
                         </AlertDialogDescription>

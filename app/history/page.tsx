@@ -63,14 +63,24 @@ export default function HistoryPage() {
             // Remove the swiped item from the local state
             setHistory((prevHistory) => prevHistory.filter((item) => item.swipe.id !== selectedSwipe.swipe.id));
 
-            toast.success('Swipe decision undone successfully. Any related matches have been removed.');
+            toast.success('Heart decision undone successfully. Any related matches have been removed.');
 
             // Close the dialog
             setShowUndoDialog(false);
             setSelectedSwipe(null);
         } catch (err) {
-            console.error('Failed to undo swipe:', err);
-            toast.error('Failed to undo swipe. Please try again.');
+            console.error('Failed to undo heart:', err);
+
+            // Handle different error types
+            let errorMessage = 'Failed to undo heart. Please try again.';
+
+            if (err instanceof SyntaxError && err.message.includes('JSON')) {
+                errorMessage = 'Server response error. Please try again or contact support.';
+            } else if (err instanceof Error) {
+                errorMessage = `Error: ${err.message}`;
+            }
+
+            toast.error(errorMessage);
         } finally {
             setUndoing(null);
         }
@@ -90,7 +100,7 @@ export default function HistoryPage() {
         <main className="flex-1 container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8 flex items-center gap-2">
                 <HistoryIcon className="h-7 w-7" />
-                Swipe History
+                Heart History
             </h1>
 
             {/* Loading state */}
@@ -128,7 +138,7 @@ export default function HistoryPage() {
             {!loading && !error && history.length === 0 && (
                 <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
                     <HistoryIcon className="h-16 w-16 text-muted-foreground mb-4" />
-                    <h2 className="text-2xl font-bold mb-2">No Swipe History</h2>
+                    <h2 className="text-2xl font-bold mb-2">No Heart History</h2>
                     <p className="text-muted-foreground mb-6 max-w-md">
                         You haven't swiped on any snacks yet. Start exploring the feed to discover snacks from around
                         the world!

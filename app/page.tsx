@@ -70,9 +70,9 @@ export default function Home() {
                             <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
                                 <span className="font-bold text-lg">2</span>
                             </div>
-                            <h3 className="text-xl font-bold mb-3">Swipe on Snacks</h3>
+                            <h3 className="text-xl font-bold mb-3">Heart on Snacks</h3>
                             <p className="text-muted-foreground">
-                                Browse and swipe right on snacks you'd like to trade for.
+                                Browse and press the heart button on snacks you'd like to trade for.
                             </p>
                         </div>
                         <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
