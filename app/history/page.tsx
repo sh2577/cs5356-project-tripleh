@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getSwipeHistory, undoSwipe, SwipeHistoryItem } from '@/lib/api';
+import { getHeartHistory, undoHeart, HeartHistoryItem } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,19 +23,19 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export default function HistoryPage() {
-    const [history, setHistory] = useState<SwipeHistoryItem[]>([]);
+    const [history, setHistory] = useState<HeartHistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [undoing, setUndoing] = useState<string | null>(null);
     const [showUndoDialog, setShowUndoDialog] = useState(false);
-    const [selectedSwipe, setSelectedSwipe] = useState<SwipeHistoryItem | null>(null);
+    const [selectedHeart, setSelectedHeart] = useState<HeartHistoryItem | null>(null);
 
     const loadHistory = async () => {
         try {
             setLoading(true);
             setError('');
-            const swipeHistory = await getSwipeHistory();
-            setHistory(swipeHistory);
+            const heartHistory = await getHeartHistory();
+            setHistory(heartHistory);
         } catch (err) {
             setError('Failed to load history. Please try again later.');
             console.error('Error loading history:', err);
@@ -48,26 +48,26 @@ export default function HistoryPage() {
         loadHistory();
     }, []);
 
-    const handleUndoRequest = (item: SwipeHistoryItem) => {
-        setSelectedSwipe(item);
+    const handleUndoRequest = (item: HeartHistoryItem) => {
+        setSelectedHeart(item);
         setShowUndoDialog(true);
     };
 
     const handleUndo = async () => {
-        if (!selectedSwipe) return;
+        if (!selectedHeart) return;
 
         try {
-            setUndoing(selectedSwipe.swipe.id);
-            await undoSwipe(selectedSwipe.swipe.id);
+            setUndoing(selectedHeart.heart.id);
+            await undoHeart(selectedHeart.heart.id);
 
-            // Remove the swiped item from the local state
-            setHistory((prevHistory) => prevHistory.filter((item) => item.swipe.id !== selectedSwipe.swipe.id));
+            // Remove the hearted item from the local state
+            setHistory((prevHistory) => prevHistory.filter((item) => item.heart.id !== selectedHeart.heart.id));
 
             toast.success('Heart decision undone successfully. Any related matches have been removed.');
 
             // Close the dialog
             setShowUndoDialog(false);
-            setSelectedSwipe(null);
+            setSelectedHeart(null);
         } catch (err) {
             console.error('Failed to undo heart:', err);
 
@@ -140,7 +140,7 @@ export default function HistoryPage() {
                     <HistoryIcon className="h-16 w-16 text-muted-foreground mb-4" />
                     <h2 className="text-2xl font-bold mb-2">No Heart History</h2>
                     <p className="text-muted-foreground mb-6 max-w-md">
-                        You haven't swiped on any snacks yet. Start exploring the feed to discover snacks from around
+                        You haven't hearted on any snacks yet. Start exploring the feed to discover snacks from around
                         the world!
                     </p>
                     <Button asChild>
@@ -153,18 +153,18 @@ export default function HistoryPage() {
             {!loading && !error && history.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {history.map((item) => (
-                        <Card key={item.swipe.id} className="overflow-hidden">
+                        <Card key={item.heart.id} className="overflow-hidden">
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <CardTitle className="text-lg">{item.snack.name}</CardTitle>
                                         <CardDescription className="flex items-center gap-1">
                                             <Clock className="h-3 w-3" />
-                                            {formatDate(item.swipe.createdAt)}
+                                            {formatDate(item.heart.createdAt)}
                                         </CardDescription>
                                     </div>
-                                    <Badge variant={item.swipe.liked ? 'default' : 'secondary'}>
-                                        {item.swipe.liked ? (
+                                    <Badge variant={item.heart.liked ? 'default' : 'secondary'}>
+                                        {item.heart.liked ? (
                                             <>
                                                 <ThumbsUp className="h-3 w-3 mr-1" /> Liked
                                             </>
@@ -201,9 +201,9 @@ export default function HistoryPage() {
                                     variant="outline"
                                     className="w-full"
                                     onClick={() => handleUndoRequest(item)}
-                                    disabled={undoing === item.swipe.id}
+                                    disabled={undoing === item.heart.id}
                                 >
-                                    {undoing === item.swipe.id ? (
+                                    {undoing === item.heart.id ? (
                                         <>
                                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                                             Undoing...
@@ -225,11 +225,11 @@ export default function HistoryPage() {
             <AlertDialog open={showUndoDialog} onOpenChange={setShowUndoDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Undo your decision on {selectedSwipe?.snack.name}?</AlertDialogTitle>
+                        <AlertDialogTitle>Undo your decision on {selectedHeart?.snack.name}?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will remove your {selectedSwipe?.swipe.liked ? 'like' : 'pass'} decision for this
+                            This will remove your {selectedHeart?.heart.liked ? 'like' : 'pass'} decision for this
                             snack. The snack will reappear in your feed so you can make a new decision.
-                            {selectedSwipe?.swipe.liked && (
+                            {selectedHeart?.heart.liked && (
                                 <span className="block mt-2 text-yellow-600 dark:text-yellow-400">
                                     Note: This will also remove any matches created with this snack.
                                 </span>

@@ -12,10 +12,10 @@ export interface Snack {
     updatedAt: string;
 }
 
-export interface Swipe {
+export interface Heart {
     id: string;
-    swiperUserId: string;
-    swipedSnackId: string;
+    hearterUserId: string;
+    heartedSnackId: string;
     liked: boolean;
     createdAt: string;
     updatedAt: string;
@@ -51,8 +51,8 @@ export interface Message {
     isMine?: boolean; // Added for UI purposes
 }
 
-export interface SwipeHistoryItem {
-    swipe: Swipe;
+export interface HeartHistoryItem {
+    heart: Heart;
     snack: {
         id: string;
         name: string;
@@ -117,20 +117,20 @@ export async function getSnackFeed(): Promise<Snack[]> {
     return response.json();
 }
 
-// Submit a swipe (like/dislike)
-export async function submitSwipe(
-    swipedSnackId: string,
+// Submit a heart (like/dislike)
+export async function submitHeart(
+    heartedSnackId: string,
     liked: boolean
 ): Promise<{
-    swipe: Swipe;
+    heart: Heart;
     match: Match | null;
 }> {
-    const response = await fetch('/api/swipes', {
+    const response = await fetch('/api/hearts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ swipedSnackId, liked }),
+        body: JSON.stringify({ heartedSnackId, liked }),
     });
 
     if (!response.ok) {
@@ -261,9 +261,9 @@ export async function unmatchUser(matchId: string): Promise<{ success: boolean }
     return response.json();
 }
 
-// Get user's swipe history
-export async function getSwipeHistory(): Promise<SwipeHistoryItem[]> {
-    const response = await fetch('/api/swipes/history');
+// Get user's heart history
+export async function getHeartHistory(): Promise<HeartHistoryItem[]> {
+    const response = await fetch('/api/hearts/history');
 
     if (!response.ok) {
         const error = await response.json();
@@ -273,9 +273,9 @@ export async function getSwipeHistory(): Promise<SwipeHistoryItem[]> {
     return response.json();
 }
 
-// Undo a swipe
-export async function undoSwipe(swipeId: string): Promise<{ success: boolean }> {
-    const response = await fetch(`/api/swipes/history?swipeId=${swipeId}`, {
+// Undo a heart
+export async function undoHeart(heartId: string): Promise<{ success: boolean }> {
+    const response = await fetch(`/api/hearts/history/${heartId}`, {
         method: 'DELETE',
     });
 

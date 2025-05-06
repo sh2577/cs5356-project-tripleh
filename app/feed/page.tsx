@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getSnackFeed, Snack, submitSwipe } from '@/lib/api';
+import { getSnackFeed, Snack, submitHeart } from '@/lib/api';
 import { SnackCard } from '@/components/snack-card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, AlertCircle, Cookie } from 'lucide-react';
@@ -14,7 +14,7 @@ export default function FeedPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [currentSnackIndex, setCurrentSnackIndex] = useState(0);
-    const [allSwiped, setAllSwiped] = useState(false);
+    const [allHearted, setAllHearted] = useState(false);
     const [showMatchAlert, setShowMatchAlert] = useState(false);
     const [matchDetails, setMatchDetails] = useState<{
         snackName: string;
@@ -27,7 +27,7 @@ export default function FeedPage() {
             try {
                 setLoading(true);
                 setError('');
-                setAllSwiped(false);
+                setAllHearted(false);
                 const feedSnacks = await getSnackFeed();
                 setSnacks(feedSnacks);
             } catch (err) {
@@ -45,7 +45,7 @@ export default function FeedPage() {
 
     const handleLike = async (snackId: string) => {
         try {
-            const response = await submitSwipe(snackId, true);
+            const response = await submitHeart(snackId, true);
 
             // Check if there's a match
             if (response.match) {
@@ -66,7 +66,7 @@ export default function FeedPage() {
 
     const handleDislike = async (snackId: string) => {
         try {
-            await submitSwipe(snackId, false);
+            await submitHeart(snackId, false);
             moveToNextSnack();
         } catch (err) {
             toast.error('Failed to dislike snack. Please try again.');
@@ -78,8 +78,8 @@ export default function FeedPage() {
         if (currentSnackIndex < snacks.length - 1) {
             setCurrentSnackIndex((prev) => prev + 1);
         } else {
-            // User has swiped on all available snacks
-            setAllSwiped(true);
+            // User has hearted on all available snacks
+            setAllHearted(true);
         }
     };
 
@@ -94,7 +94,7 @@ export default function FeedPage() {
             const feedSnacks = await getSnackFeed();
             setSnacks(feedSnacks);
             setCurrentSnackIndex(0);
-            setAllSwiped(false);
+            setAllHearted(false);
         } catch (err) {
             toast.error('Failed to refresh snacks. Please try again.');
             console.error('Error refreshing snacks:', err);
@@ -124,8 +124,8 @@ export default function FeedPage() {
                 </Alert>
             )}
 
-            {/* No snacks state - either initially empty or all swiped */}
-            {!loading && !error && (snacks.length === 0 || allSwiped) && !showMatchAlert && (
+            {/* No snacks state - either initially empty or all hearted */}
+            {!loading && !error && (snacks.length === 0 || allHearted) && !showMatchAlert && (
                 <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
                     <Cookie className="h-16 w-16 text-muted-foreground mb-4" />
                     <h2 className="text-2xl font-bold mb-2">No Snacks Found</h2>
@@ -136,7 +136,7 @@ export default function FeedPage() {
                         <Link href="/snacks/new">
                             <Button>Add Your Snack</Button>
                         </Link>
-                        {allSwiped && (
+                        {allHearted && (
                             <Button variant="outline" onClick={restartFeed}>
                                 Refresh Feed
                             </Button>
@@ -145,8 +145,8 @@ export default function FeedPage() {
                 </div>
             )}
 
-            {/* Snack cards - only show if we have snacks and not all have been swiped */}
-            {!loading && !error && currentSnack && !allSwiped && (
+            {/* Snack cards - only show if we have snacks and not all have been hearted */}
+            {!loading && !error && currentSnack && !allHearted && (
                 <div className="max-w-md mx-auto">
                     <SnackCard snack={currentSnack} onLike={handleLike} onDislike={handleDislike} />
                 </div>
@@ -178,4 +178,3 @@ export default function FeedPage() {
         </main>
     );
 }
- 

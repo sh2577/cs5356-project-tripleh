@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database/db';
-import { snacks, swipes } from '@/database/schema';
+import { snacks, hearts } from '@/database/schema';
 import { getCurrentUser } from '@/lib/auth';
 import { and, eq, inArray, not } from 'drizzle-orm';
 
@@ -9,24 +9,24 @@ export async function GET(_: NextRequest) {
     try {
         const user = await getCurrentUser();
 
-        // Find all the snack IDs that the user has already swiped on
-        const userSwipes = await db
-            .select({ snackId: swipes.swipedSnackId })
-            .from(swipes)
-            .where(eq(swipes.swiperUserId, user.id));
+        // Find all the snack IDs that the user has already hearted on
+        const userHearts = await db
+            .select({ snackId: hearts.hearterSnackId })
+            .from(hearts)
+            .where(eq(hearts.hearterUserId, user.id));
 
-        const swipedSnackIds = userSwipes.map((swipe) => swipe.snackId);
+        const heartedSnackIds = userHearts.map((heart) => heart.snackId);
 
         // Get snacks that:
         // 1. Don't belong to the current user
-        // 2. Haven't been swiped on by the current user
+        // 2. Haven't been hearted on by the current user
         const snackFeed = await db
             .select()
             .from(snacks)
             .where(
                 and(
                     not(eq(snacks.userId, user.id)),
-                    swipedSnackIds.length > 0 ? not(inArray(snacks.id, swipedSnackIds)) : undefined
+                    heartedSnackIds.length > 0 ? not(inArray(snacks.id, heartedSnackIds)) : undefined
                 )
             )
             .limit(10); // Limit to 10 snacks for pagination

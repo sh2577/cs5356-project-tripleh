@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database/db';
-import { matches, swipes, snacks } from '@/database/schema';
+import { matches, hearts, snacks } from '@/database/schema';
 import { getCurrentUser } from '@/lib/auth';
 import { and, eq, or, inArray } from 'drizzle-orm';
 
@@ -52,7 +52,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ mat
         const match = matchDetails[0];
         const otherUserId = match.user1Id === user.id ? match.user2Id : match.user1Id;
 
-        // Begin transaction to delete match and related swipes
+        // Begin transaction to delete match and related hearts
         await db.transaction(async (tx) => {
             // Delete the match first
             await tx.delete(matches).where(eq(matches.id, matchId));
@@ -71,18 +71,18 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ mat
                 .where(eq(snacks.userId, otherUserId));
             const otherUserSnackIds = otherUserSnacks.map((snack) => snack.id);
 
-            // Delete swipes from current user to other user's snacks
+            // Delete hearts from current user to other user's snacks
             if (otherUserSnackIds.length > 0) {
                 await tx
-                    .delete(swipes)
-                    .where(and(eq(swipes.swiperUserId, user.id), inArray(swipes.swipedSnackId, otherUserSnackIds)));
+                    .delete(hearts)
+                    .where(and(eq(hearts.hearterUserId, user.id), inArray(hearts.hearterSnackId, otherUserSnackIds)));
             }
 
-            // Delete swipes from other user to current user's snacks
+            // Delete hearts from other user to current user's snacks
             if (userSnackIds.length > 0) {
                 await tx
-                    .delete(swipes)
-                    .where(and(eq(swipes.swiperUserId, otherUserId), inArray(swipes.swipedSnackId, userSnackIds)));
+                    .delete(hearts)
+                    .where(and(eq(hearts.hearterUserId, otherUserId), inArray(hearts.hearterSnackId, userSnackIds)));
             }
         });
 
